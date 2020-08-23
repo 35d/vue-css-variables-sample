@@ -1,13 +1,13 @@
 <template>
-  <div class="container">
+  <div class="container" :style="styles">
     <div>
-      <Button :click="_onClickButton">ボタン</Button>
+      <button @click="_onClickButton" class="button">ボタン</button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { defineComponent, computed, reactive } from '@vue/composition-api'
 
 const urls = [
   'https://blog.35d.jp/img/glitched-01.png',
@@ -15,9 +15,21 @@ const urls = [
   'https://blog.35d.jp/img/glitched-03.png',
 ]
 
-export default Vue.extend({
-  methods: {
-    _onClickButton() {},
+type State = {
+  index: number
+}
+
+export default defineComponent({
+  setup() {
+    const state = reactive<State>({ index: 0 })
+    const styles = computed<Object>(() => ({
+      '--image-url': `url(${urls[state.index]})`,
+    }))
+    const _onClickButton = () => {
+      state.index = (state.index + 1) % urls.length
+    }
+
+    return { _onClickButton, styles, state }
   },
 })
 </script>
@@ -25,11 +37,14 @@ export default Vue.extend({
 <style>
 .container {
   background-color: rgb(17, 17, 17);
-  margin: 0 auto;
+  background-image: var(--image-url);
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
+}
+
+.button {
+  cursor: pointer;
 }
 </style>
